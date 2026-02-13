@@ -12,7 +12,7 @@
         <div class="glass" style="background: rgba(255, 255, 255, 0.2); padding: 40px; border-radius: 30px; text-align: center; width: 90%; max-width: 400px; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
             <div style="font-size: 3rem; margin-bottom: 20px;">🔒</div>
             <h2 style="color: white; margin-bottom: 10px;">हमारी दुनिया</h2>
-            <p style="color: white; opacity: 0.9; margin-bottom: 30px; font-size: 0.9rem;">प्रवेश करने के लिए पासवर्ड डालें</p>
+            <p style="color: white; opacity: 0.9; margin-bottom: 30px; font-size: 0.9rem;">प्रवेश करने के लिए पासवर्ड </p>
             <input type="password" id="pass-input" placeholder="पासवर्ड यहाँ लिखें..." style="width: 100%; padding: 15px; border-radius: 50px; border: none; outline: none; margin-bottom: 20px; text-align: center; font-size: 1.1rem; box-sizing: border-box;">
             <button onclick="checkPassword()" style="width: 100%; padding: 15px; border-radius: 50px; border: none; background: white; color: #ff4d6d; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s;">प्रवेश करें 💖</button>
             <p id="error-msg" style="color: #fff; margin-top: 15px; font-size: 0.8rem; display: none; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 10px;">गलत पासवर्ड! फिर से कोशिश करें।</p>
@@ -50,6 +50,8 @@
             @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 109, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(255, 77, 109, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 109, 0); } }
             @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
             @keyframes glow { 0%, 100% { border-color: var(--primary); box-shadow: 0 0 5px var(--primary); } 50% { border-color: var(--accent); box-shadow: 0 0 20px var(--accent); } }
+            @keyframes successSnap { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+            
             .reveal { opacity: 0; transition: all 0.8s ease-out; transform: translateY(30px); }
             .reveal.active { opacity: 1; transform: translateY(0); }
             .glass { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
@@ -58,6 +60,38 @@
             body { font-family: 'Noto Sans Devanagari', sans-serif; }
             .photo-slot { transition: transform 0.3s ease; cursor: pointer; }
             .photo-slot:hover { transform: scale(1.02); }
+
+            /* GAME STYLES */
+            .game-piece {
+                width: 140px;
+                height: 200px;
+                background: #fff;
+                position: absolute;
+                cursor: grab;
+                overflow: hidden;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: opacity 0.3s, border-radius 0.5s;
+                z-index: 10;
+            }
+            .game-piece img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                opacity: 0.6;
+                pointer-events: none;
+                transition: opacity 0.5s;
+            }
+            .game-piece.snapped img {
+                opacity: 1;
+            }
+            .left-piece { border-radius: 15px 0 0 15px; }
+            .right-piece { border-radius: 0 15px 15px 0; }
+            
+            img { max-width: 100%; height: auto; display: block; }
+            .placeholder-img { width: 100%; height: 100%; object-fit: cover; }
         `;
         document.head.appendChild(styleTag);
 
@@ -179,7 +213,7 @@
     <!-- MAIN CONTENT -->
     <main style="max-width: 1000px; margin: 0 auto; padding: 80px 20px;">
         <!-- HERO -->
-        <section id="hero" class="reveal active" style="text-align: center; padding: 60px 0;">
+        <section id="hero" class="reveal active" style="text-align: center; padding: 40px 0;">
             <div style="font-size: 4rem; margin-bottom: 10px;">💝</div>
             <h1 id="hero-title" style="font-size: 3rem; margin: 0; line-height: 1.1;">मेरे वैलेंटाइन के लिए</h1>
             <p id="hero-subtext" style="font-size: 1.2rem; opacity: 0.8; max-width: 600px; margin: 20px auto;">तुम्हारे साथ बिताया हर पल एक खूबसूरत वादा है।</p>
@@ -194,36 +228,65 @@
             <div class="glass" style="padding: 20px; border-radius: 15px; border: 3px dashed #ff4d6d; text-align: center; animation: glow 3s infinite;">
                 <h4 id="labelA" style="margin-top: 0;">खुशी</h4>
                 <div id="previewA" style="width: 100%; aspect-ratio: 1; background: #eee; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 15px;">
-                    <span style="font-size: 3rem;">👤</span>
+                    <img id="imgA" src="https://images.unsplash.com/photo-1518893063132-36e46dbe2428?q=80&w=400&h=400&fit=crop" class="placeholder-img" alt="खुशी">
                 </div>
-                <button onclick="$('uploadA').click()" style="background: #eee; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">अपलोड</button>
+                <button onclick="$('uploadA').click()" style="background: #eee; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">बदलें</button>
                 <input type="file" id="uploadA" hidden onchange="handleImage(this, 'previewA')">
             </div>
 
             <div class="glass" style="padding: 20px; border-radius: 15px; border: 3px dashed #ff4d6d; text-align: center; animation: glow 3s infinite 1.5s;">
                 <h4 id="labelB" style="margin-top: 0;">नितिन</h4>
                 <div id="previewB" style="width: 100%; aspect-ratio: 1; background: #eee; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 15px;">
-                    <span style="font-size: 3rem;">👤</span>
+                    <img id="imgB" src="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?q=80&w=400&h=400&fit=crop" class="placeholder-img" alt="नितिन">
                 </div>
-                <button onclick="$('uploadB').click()" style="background: #eee; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">अपलोड</button>
+                <button onclick="$('uploadB').click()" style="background: #eee; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">बदलें</button>
                 <input type="file" id="uploadB" hidden onchange="handleImage(this, 'previewB')">
+            </div>
+        </section>
+
+        <!-- JOINING GAME SECTION -->
+        <section id="games" class="reveal" style="padding: 60px 0;">
+            <h2 style="text-align: center;">हमें एक साथ लाएं 💘</h2>
+            <p style="text-align: center; opacity: 0.7; margin-bottom: 20px;">दोनों तस्वीरों को एक दूसरे के करीब खींचें (Snap pieces together!)</p>
+            <div id="game-canvas" style="height: 400px; background: rgba(0,0,0,0.03); border-radius: 20px; position: relative; touch-action: none; overflow: hidden; border: 1px solid rgba(0,0,0,0.05);">
+                <!-- Card A (Left side) -->
+                <div id="cardA" class="no-select game-piece left-piece" style="top: 50px; left: 30px;">
+                    <div id="cardInnerA" style="width: 100%; height: 100%;">
+                        <img id="gameImgA" src="https://images.unsplash.com/photo-1518893063132-36e46dbe2428?q=80&w=280&h=400&fit=crop" alt="Left Half">
+                    </div>
+                </div>
+                <!-- Card B (Right side) -->
+                <div id="cardB" class="no-select game-piece right-piece" style="bottom: 50px; right: 30px;">
+                    <div id="cardInnerB" style="width: 100%; height: 100%;">
+                        <img id="gameImgB" src="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?q=80&w=280&h=400&fit=crop" alt="Right Half">
+                    </div>
+                </div>
+                <div id="match-badge" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; font-size: 2rem; font-weight: bold; text-align: center; width: 100%; pointer-events: none; color: #ff0040; text-shadow: 0 2px 10px rgba(255,255,255,0.8);">
+                     💖
+                </div>
             </div>
         </section>
 
         <!-- TOGETHER SECTION -->
         <section id="together" class="reveal" style="padding: 60px 0; text-align: center;">
-            <h2 style="font-size: 2rem; margin-bottom: 10px;">हमारी खूबसूरत यादें 📸</h2>
+            <h2 style="font-size: 2rem; margin-bottom: 20px;">हमारी खूबसूरत यादें 📸</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                 <div class="glass photo-slot" style="padding: 10px; border-radius: 15px; background: white;" onclick="$('uploadShared1').click()">
-                    <div id="sharedPrev1" style="width: 100%; aspect-ratio: 4/5; background: #f9f9f9; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">💑</div>
+                    <div id="sharedPrev1" style="width: 100%; aspect-ratio: 4/5; background: #f9f9f9; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <img src="https://images.unsplash.com/photo-1516589174184-c68d8e21e27d?q=80&w=300&h=400&fit=crop" class="placeholder-img" alt="Memory 1">
+                    </div>
                     <input type="file" id="uploadShared1" hidden onchange="handleImage(this, 'sharedPrev1')">
                 </div>
                 <div class="glass photo-slot" style="padding: 10px; border-radius: 15px; background: white;" onclick="$('uploadShared2').click()">
-                    <div id="sharedPrev2" style="width: 100%; aspect-ratio: 4/5; background: #f9f9f9; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">🌟</div>
+                    <div id="sharedPrev2" style="width: 100%; aspect-ratio: 4/5; background: #f9f9f9; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <img src="https://images.unsplash.com/photo-1529636760656-e09213d095bc?q=80&w=300&h=400&fit=crop" class="placeholder-img" alt="Memory 2">
+                    </div>
                     <input type="file" id="uploadShared2" hidden onchange="handleImage(this, 'sharedPrev2')">
                 </div>
                 <div class="glass photo-slot" style="padding: 10px; border-radius: 15px; background: white;" onclick="$('uploadShared3').click()">
-                    <div id="sharedPrev3" style="width: 100%; aspect-ratio: 4/5; background: #f9f9f9; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">🍃</div>
+                    <div id="sharedPrev3" style="width: 100%; aspect-ratio: 4/5; background: #f9f9f9; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <img src="https://images.unsplash.com/photo-1474552226712-ac0f0961a954?q=80&w=300&h=400&fit=crop" class="placeholder-img" alt="Memory 3">
+                    </div>
                     <input type="file" id="uploadShared3" hidden onchange="handleImage(this, 'sharedPrev3')">
                 </div>
             </div>
@@ -234,19 +297,9 @@
             <h2 style="font-size: 2rem;">वादा उम्र भर का</h2>
             <div style="font-size: 1.1rem; line-height: 1.8; max-width: 700px; margin: 0 auto;">
                 <p id="displayMsg"></p>
-                <blockquote style="font-style: italic; border-left: 4px solid #ff4d6d; padding: 20px; background: rgba(255, 77, 109, 0.05);">
+                <blockquote style="font-style: italic; border-left: 4px solid #ff4d6d; padding: 20px; background: rgba(255, 77, 109, 0.05); border-radius: 0 15px 15px 0;">
                     "हमारा प्यार वक्त के साथ और भी गहरा होगा।"
                 </blockquote>
-            </div>
-        </section>
-
-        <!-- GAMES SECTION -->
-        <section id="games" class="reveal" style="padding: 60px 0;">
-            <h2 style="text-align: center;">करीब लाएं 💘</h2>
-            <div id="game-canvas" style="height: 350px; background: rgba(0,0,0,0.03); border-radius: 15px; position: relative; touch-action: none;">
-                <div id="cardA" class="no-select" style="width: 100px; height: 100px; background: #fff; border: 4px solid #ff4d6d; border-radius: 10px; position: absolute; top: 50px; left: 50px; cursor: grab; display: flex; align-items: center; justify-content: center; font-size: 2rem;">👤</div>
-                <div id="cardB" class="no-select" style="width: 100px; height: 100px; background: #fff; border: 4px solid #7000ff; border-radius: 10px; position: absolute; bottom: 50px; right: 50px; cursor: grab; display: flex; align-items: center; justify-content: center; font-size: 2rem;">👤</div>
-                <div id="match-badge" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); transition: 0.5s; z-index: 5; font-size: 2rem; font-weight: bold;">हमेशा के लिए एक! 💘</div>
             </div>
         </section>
 
@@ -254,7 +307,7 @@
         <section id="note" class="reveal" style="padding: 60px 0; text-align: center;">
             <div class="glass" style="padding: 40px; border-radius: 30px;">
                 <h2>सात वचन 💌</h2>
-                <div id="generated-note" style="min-height: 100px; font-size: 1.2rem; padding: 20px; border-radius: 15px; background: white; margin-bottom: 20px;">वादा करें...</div>
+                <div id="generated-note" style="min-height: 100px; font-size: 1.2rem; padding: 20px; border-radius: 15px; background: white; margin-bottom: 20px; display: flex; align-items: center; justify-content: center;">वादा करें...</div>
                 <button onclick="generateNote()" class="theme-bg" style="padding: 12px 24px; border: none; border-radius: 50px; color: white; font-weight: bold; cursor: pointer;">नया वादा</button>
             </div>
         </section>
@@ -274,7 +327,8 @@
     </div>
 
     <script>
-        // Initialization functions moved inside checkPassword, but helper functions defined globally
+        let isSnapped = false;
+
         function initUI() {
             setTheme(state.theme);
             $('displayMsg').innerText = state.customMessage;
@@ -301,9 +355,12 @@
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const prev = $(previewId);
-                    prev.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
-                    if (previewId === 'previewA') $('cardA').innerHTML = prev.innerHTML;
-                    if (previewId === 'previewB') $('cardB').innerHTML = prev.innerHTML;
+                    const imgHtml = `<img src="${e.target.result}" class="placeholder-img" style="width:100%;height:100%;object-fit:cover;">`;
+                    prev.innerHTML = imgHtml;
+                    
+                    if (previewId === 'previewA') $('cardInnerA').innerHTML = imgHtml;
+                    if (previewId === 'previewB') $('cardInnerB').innerHTML = imgHtml;
+                    
                     showToast("फोटो अपडेट हो गई! 📸");
                 };
                 reader.readAsDataURL(input.files[0]);
@@ -332,34 +389,89 @@
         function setupDraggable(id) {
             const el = $(id);
             let active = false, currentX = 0, currentY = 0, initialX, initialY, xOffset = 0, yOffset = 0;
+            
             const dragStart = (e) => {
+                if(isSnapped) return;
                 const ev = e.type === "touchstart" ? e.touches[0] : e;
-                initialX = ev.clientX - xOffset; initialY = ev.clientY - yOffset;
-                if (e.target === el || el.contains(e.target)) active = true;
+                initialX = ev.clientX - xOffset; 
+                initialY = ev.clientY - yOffset;
+                if (e.target === el || el.contains(e.target)) {
+                    active = true;
+                    el.style.zIndex = "50";
+                }
             };
-            const dragEnd = () => { initialX = currentX; initialY = currentY; active = false; checkCollision(); };
+            
+            const dragEnd = () => { 
+                if(isSnapped) return;
+                initialX = currentX; 
+                initialY = currentY; 
+                active = false; 
+                el.style.zIndex = "10";
+                checkSnap(); 
+            };
+            
             const drag = (e) => {
-                if (active) {
+                if (active && !isSnapped) {
                     e.preventDefault();
                     const ev = e.type === "touchmove" ? e.touches[0] : e;
-                    currentX = ev.clientX - initialX; currentY = ev.clientY - initialY;
-                    xOffset = currentX; yOffset = currentY;
+                    currentX = ev.clientX - initialX; 
+                    currentY = ev.clientY - initialY;
+                    xOffset = currentX; 
+                    yOffset = currentY;
                     el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
                 }
             };
-            el.addEventListener("mousedown", dragStart); document.addEventListener("mouseup", dragEnd); document.addEventListener("mousemove", drag);
-            el.addEventListener("touchstart", dragStart); document.addEventListener("touchend", dragEnd); document.addEventListener("touchmove", drag);
+
+            el.addEventListener("mousedown", dragStart); 
+            document.addEventListener("mouseup", dragEnd); 
+            document.addEventListener("mousemove", drag);
+            el.addEventListener("touchstart", dragStart); 
+            document.addEventListener("touchend", dragEnd); 
+            document.addEventListener("touchmove", drag, {passive: false});
         }
 
-        function checkCollision() {
+        function checkSnap() {
+            if(isSnapped) return;
             const a = $('cardA').getBoundingClientRect();
             const b = $('cardB').getBoundingClientRect();
-            const dist = Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
-            if (dist < 80) {
-                $('match-badge').style.transform = 'translate(-50%, -50%) scale(1.5)';
-                confettiBurst(a.x + 50, a.y + 50);
-                setTimeout(() => { $('match-badge').style.transform = 'translate(-50%, -50%) scale(0)'; }, 3000);
+            
+            const horizontalGap = b.left - a.right;
+            const verticalDiff = Math.abs(a.top - b.top);
+
+            if (horizontalGap < 20 && horizontalGap > -40 && verticalDiff < 40) {
+                triggerSnap();
             }
+        }
+
+        function triggerSnap() {
+            isSnapped = true;
+            const cardA = $('cardA');
+            const cardB = $('cardB');
+            const canvas = $('game-canvas').getBoundingClientRect();
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            cardA.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+            cardB.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+
+            cardA.style.left = (centerX - 140) + "px";
+            cardA.style.top = (centerY - 100) + "px";
+            cardA.style.transform = "translate3d(0, 0, 0)";
+
+            cardB.style.left = centerX + "px";
+            cardB.style.top = (centerY - 100) + "px";
+            cardB.style.transform = "translate3d(0, 0, 0)";
+
+            setTimeout(() => {
+                cardA.classList.add('snapped');
+                cardB.classList.add('snapped');
+                cardA.style.animation = "successSnap 0.5s ease";
+                cardB.style.animation = "successSnap 0.5s ease";
+                
+                $('match-badge').style.transform = 'translate(-50%, -50%) scale(1)';
+                confettiBurst(canvas.left + centerX, canvas.top + centerY);
+                playTone(523.25, 'sine', 0.5);
+            }, 500);
         }
 
         const promises = [
@@ -370,7 +482,6 @@
         ];
         function generateNote() { $('generated-note').innerText = promises[Math.floor(Math.random() * promises.length)]; }
 
-        // Trigger focus on password box
         window.addEventListener('load', () => $('pass-input').focus());
         $('pass-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPassword(); });
     </script>
