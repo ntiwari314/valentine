@@ -49,6 +49,8 @@
             .no-select { -webkit-user-select: none; user-select: none; }
             html { scroll-behavior: smooth; }
             body { font-family: 'Noto Sans Devanagari', sans-serif; }
+            .photo-slot { transition: transform 0.3s ease; cursor: pointer; }
+            .photo-slot:hover { transform: scale(1.02); }
         `;
         document.head.appendChild(styleTag);
 
@@ -145,6 +147,7 @@
         </div>
         <div style="display: flex; gap: 15px; font-size: 0.9rem;">
             <a href="#about" style="text-decoration: none; color: inherit;">कहानी</a>
+            <a href="#together" style="text-decoration: none; color: inherit;">यादें</a>
             <a href="#games" style="text-decoration: none; color: inherit;">खेल</a>
             <a href="#note" style="text-decoration: none; color: inherit;">वादे</a>
         </div>
@@ -164,7 +167,7 @@
             </div>
         </section>
 
-        <!-- PHOTO SECTION -->
+        <!-- PHOTO SECTION (INDIVIDUAL) -->
         <section id="photos" class="reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; padding: 40px 0;">
             <div id="frameA" class="glass" style="padding: 20px; border-radius: 15px; border: 3px dashed #ff4d6d; text-align: center; animation: glow 3s infinite;">
                 <h4 id="labelA" style="margin-top: 0;">खुशी</h4>
@@ -182,6 +185,39 @@
                 </div>
                 <button onclick="$('uploadB').click()" style="background: #eee; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;">फोटो अपलोड करें</button>
                 <input type="file" id="uploadB" hidden onchange="handleImage(this, 'previewB')">
+            </div>
+        </section>
+
+        <!-- NEW: OUR MOMENTS TOGETHER SECTION -->
+        <section id="together" class="reveal" style="padding: 60px 0; text-align: center;">
+            <h2 style="font-size: 2rem; margin-bottom: 10px;">हमारी खूबसूरत यादें 📸</h2>
+            <p style="opacity: 0.7; margin-bottom: 30px;">वो लम्हें जो हम दोनों ने साथ बिताए...</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                <!-- Slot 1 -->
+                <div class="glass photo-slot" style="padding: 10px; border-radius: 15px; background: white;" onclick="$('uploadShared1').click()">
+                    <div id="sharedPrev1" style="width: 100%; aspect-ratio: 4/5; background: #f9f9f9; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <span style="font-size: 2rem; opacity: 0.3;">💑</span>
+                    </div>
+                    <input type="file" id="uploadShared1" hidden onchange="handleImage(this, 'sharedPrev1')">
+                    <p style="font-size: 0.8rem; margin-top: 10px; font-weight: bold;">साथ में पहली फोटो</p>
+                </div>
+                <!-- Slot 2 -->
+                <div class="glass photo-slot" style="padding: 10px; border-radius: 15px; background: white;" onclick="$('uploadShared2').click()">
+                    <div id="sharedPrev2" style="width: 100%; aspect-ratio: 4/5; background: #f9f9f9; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <span style="font-size: 2rem; opacity: 0.3;">🌟</span>
+                    </div>
+                    <input type="file" id="uploadShared2" hidden onchange="handleImage(this, 'sharedPrev2')">
+                    <p style="font-size: 0.8rem; margin-top: 10px; font-weight: bold;">सबसे प्यारी याद</p>
+                </div>
+                <!-- Slot 3 -->
+                <div class="glass photo-slot" style="padding: 10px; border-radius: 15px; background: white;" onclick="$('uploadShared3').click()">
+                    <div id="sharedPrev3" style="width: 100%; aspect-ratio: 4/5; background: #f9f9f9; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <span style="font-size: 2rem; opacity: 0.3;">🍃</span>
+                    </div>
+                    <input type="file" id="uploadShared3" hidden onchange="handleImage(this, 'sharedPrev3')">
+                    <p style="font-size: 0.8rem; margin-top: 10px; font-weight: bold;">हँसते हुए पल</p>
+                </div>
             </div>
         </section>
 
@@ -311,13 +347,18 @@
                     Object.assign(img.style, { width: '100%', height: '100%', objectFit: 'cover' });
                     prev.appendChild(img);
                     
-                    const cardId = previewId === 'previewA' ? 'cardA' : 'cardB';
-                    const card = $(cardId);
-                    card.innerHTML = '';
-                    const cardImg = img.cloneNode();
-                    card.appendChild(cardImg);
+                    // Update game cards if main photos are changed
+                    if (previewId === 'previewA') {
+                        const card = $('cardA');
+                        card.innerHTML = '';
+                        card.appendChild(img.cloneNode());
+                    } else if (previewId === 'previewB') {
+                        const card = $('cardB');
+                        card.innerHTML = '';
+                        card.appendChild(img.cloneNode());
+                    }
                     
-                    showToast("फोटो बदल गई! 📸");
+                    showToast("फोटो अपडेट हो गई! 📸");
                 };
                 reader.readAsDataURL(input.files[0]);
             }
